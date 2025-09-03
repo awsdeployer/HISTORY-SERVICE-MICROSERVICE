@@ -11,7 +11,6 @@ jobs:
   # ======================
   history-service:
     runs-on: self-hosted
-    needs: [deployer-app]   # Run after Deployer App
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
