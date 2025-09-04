@@ -56,6 +56,10 @@ jobs:
           docker build -t ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} .
           docker push ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }}
 
+      - name: Save Git SHA to file
+        run: |
+          echo "${{ env.GIT_SHA }}" > backend/history-services/GIT_SHA.txt
+
       - name: Image Scan (Trivy - History Service)
         uses: aquasecurity/trivy-action@master
         with:
