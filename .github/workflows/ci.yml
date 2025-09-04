@@ -63,7 +63,7 @@ jobs:
 
       - name: Save Git SHA to file
         run: |
-          echo "${{ env.GIT_SHA }}" > backend/history-services/GIT_SHA.txt
+          echo "${{ env.GIT_SHA }}" > backend/GIT_SHA.txt
 
       - name: Commit SHA file
         run: |
