@@ -2,7 +2,7 @@ name: CD - Kubernetes Deploy
 
 on:
   workflow_run:
-    workflows: ["CI - Docker Build & Push"]  # Replace with your exact CI workflow name
+    workflows: ["CI - Docker Build & Push"]
     types:
       - completed
 
@@ -23,9 +23,9 @@ jobs:
         with:
           version: 'v1.27.0'
 
-      # Export Git SHA from triggering commit
-      - name: Set Git SHA
-        run: echo "GIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+      # Export Git SHA from triggering CI workflow
+      - name: Set Git SHA from CI
+        run: echo "GIT_SHA=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
 
       # Update Deployment with Git SHA image
       - name: Update Deployment Image
