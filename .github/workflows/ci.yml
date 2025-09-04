@@ -14,6 +14,7 @@ jobs:
     env:
       DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      GIT_SHA: ${{ github.sha }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -52,13 +53,13 @@ jobs:
       - name: Build & Push History Service
         run: |
           cd backend/history-services
-          docker build -t ${{ env.DOCKER_HUB_USERNAME }}/history-service:latest .
-          docker push ${{ env.DOCKER_HUB_USERNAME }}/history-service:latest
+          docker build -t ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} .
+          docker push ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }}
 
       - name: Image Scan (Trivy - History Service)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.DOCKER_HUB_USERNAME }}/history-service:latest
+          image-ref: ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }}
           format: table
           exit-code: 0
         continue-on-error: true
