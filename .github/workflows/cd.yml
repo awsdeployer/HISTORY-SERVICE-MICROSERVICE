@@ -32,7 +32,7 @@ jobs:
         run: |
           cd backend/k8s/deployment
           kubectl set image deployment/history-service \
-            deployer-app=${{ secrets.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} \
+            history-service=${{ secrets.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} \
             -n ashapp
 
       # Rollout restart to ensure pods pick new image
