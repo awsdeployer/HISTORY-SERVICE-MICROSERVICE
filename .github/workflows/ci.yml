@@ -1,9 +1,11 @@
-name: CI - Docker Build & Push (History Service)
+name: CI - Docker Build & Push (HISTORY-SERVICE)
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'backend/k8s/deployment/history-service-deployment.yaml'
 
 permissions:
   contents: write
