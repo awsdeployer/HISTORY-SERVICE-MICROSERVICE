@@ -1,3 +1,14 @@
+# Project Working Screenshots
+
+Here are some working screenshots of the project:
+
+## Screenshots
+
+### Screenshot 1
+![Screenshot 1](working-ss/1.png)
+
+
+
 DOCKER_HUB_USERNAME
 
 
