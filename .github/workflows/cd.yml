@@ -26,7 +26,7 @@ jobs:
       # Update Deployment with Git SHA image
       - name: Update Deployment Image
         run: |
-          cd backend/k8s/deployment
+          cd backend/k8s
           kubectl apply -f deployment/
 
       # Rollout restart to ensure pods pick new image
