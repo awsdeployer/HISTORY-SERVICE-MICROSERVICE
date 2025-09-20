@@ -23,22 +23,16 @@ jobs:
         with:
           version: 'v1.27.0'
 
-      # Export Git SHA from triggering CI workflow
-      - name: Set Git SHA from CI
-        run: echo "GIT_SHA=$(cat backend/GIT_SHA.txt)" >> $GITHUB_ENV
-
       # Update Deployment with Git SHA image
       - name: Update Deployment Image
         run: |
           cd backend/k8s/deployment
-          kubectl set image deployment/history-service \
-            history-service=${{ secrets.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} \
-            -n ashapp
+          kubectl apply -f deployment/
 
       # Rollout restart to ensure pods pick new image
       - name: Rollout Restart
         run: |
-          kubectl rollout status deployment/history-service -n ashapp
+          kubectl rollout restart deployment/history-service -n ashapp
 
       - name: Apply Services
         run: |
