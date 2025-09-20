@@ -9,85 +9,147 @@ Here are some working screenshots of the project:
 
 
 
-DOCKER_HUB_USERNAME
+## Overview
 
+**HISTORY-SERVICE-MICROSERVICE** is a Spring Boot-based microservice designed to record, store, and retrieve the history of queries and their outputs. It is built with Java 17, uses H2 as an embedded database, and is containerized for deployment in Kubernetes environments. The service is intended to be a reusable backend component for applications that need to track and audit user or system actions.
 
-DOCKER_HUB_ACCESS_TOKEN
+---
 
+## Features
 
+- **RESTful API** for saving and listing history records.
+- **Persistent storage** using H2 database.
+- **Time zone configuration** for consistent timestamping.
+- **Kubernetes-ready** with deployment, service, HPA, and RBAC manifests.
+- **CI/CD** pipelines for automated build, test, security scan, and deployment.
 
+---
 
-kubectl get namespace ashapp -o json > ashapp-latest.json
+## High-Level Workflow
 
-nano ashapp-latest.json
+1. **Client Application** sends a request to save or retrieve history.
+2. **History Service API** receives the request via REST endpoints.
+3. **Service Layer** processes the request and interacts with the database.
+4. **Database** stores or retrieves the history data.
+5. **Response** is sent back to the client.
 
-make like this: -
-"spec": {
-  "finalizers": []
-}
+---
 
-kubectl replace --raw "/api/v1/namespaces/ashapp/finalize" -f ./ashapp-latest.json
+## UML Diagram (Class & Sequence)
 
-kubectl get ns
+### Class Diagram
 
-rm ashapp-latest.json
+```
++---------------------+
+|   History           |
++---------------------+
+| - id: Long          |
+| - query: String     |
+| - output: String    |
+| - timestamp: Date   |
++---------------------+
 
-cd backend
++---------------------+
+|   HistoryRepository |
++---------------------+
+| + findAllByOrderByIdDesc() |
++---------------------+
 
-docker build -t ashwanth01/flask-app:latest .
++---------------------+
+|   HistoryController |
++---------------------+
+| + saveHistory()     |
+| + listHistory()     |
++---------------------+
+```
 
-docker push ashwanth01/flask-app:latest
+### Sequence Diagram
 
+```
+Client --> HistoryController: POST /history/save (query, output)
+HistoryController --> HistoryRepository: save(history)
+HistoryRepository --> Database: INSERT history
+Database --> HistoryRepository: Success
+HistoryRepository --> HistoryController: Saved entity
+HistoryController --> Client: Response (saved history)
 
-docker build -t ashwanth01/deployer-app:latest -f deployer-dockerfile .
+Client --> HistoryController: GET /history/list
+HistoryController --> HistoryRepository: findAllByOrderByIdDesc()
+HistoryRepository --> Database: SELECT * FROM history ORDER BY id DESC
+Database --> HistoryRepository: List<History>
+HistoryRepository --> HistoryController: List<History>
+HistoryController --> Client: Response (history list)
+```
 
-docker push ashwanth01/deployer-app:latest
+---
 
+## Design Diagram (Component/Deployment)
 
-cd history-services
+```
++-------------------+        +---------------------+        +------------------+
+|   Client App      | <----> |  History Service    | <----> |   H2 Database    |
+| (Frontend/Other)  |  REST  | (Spring Boot, REST) |  JPA   | (Embedded)       |
++-------------------+        +---------------------+        +------------------+
+                                   |
+                                   v
+                            +------------------+
+                            | Kubernetes       |
+                            | (Deployment,     |
+                            |  Service, HPA,   |
+                            |  RBAC)           |
+                            +------------------+
+```
 
-docker build -t ashwanth01/history-service:latest .
+---
 
-docker push ashwanth01/history-service:latest
+## API Endpoints
 
+### 1. Save History
 
-cd ../database
+- **Endpoint:** `POST /history/save`
+- **Request Body:** `{ "query": "...", "output": "..." }`
+- **Response:** Saved history record (with timestamp and ID)
+- **Error Handling:** Returns 400 for missing fields, 500 for server errors.
 
-docker build -t ashwanth01/flask-monitor:latest .
+### 2. List History
 
-docker push ashwanth01/flask-monitor:latest
+- **Endpoint:** `GET /history/list`
+- **Response:** List of all history records, ordered by most recent.
 
+---
 
-cd ../history-service
+## Kubernetes Workflow
 
-docker build -t ashwanth01/history-service:latest .
+- **Deployment:** Deploys the service as a single replica (scalable via HPA).
+- **Service:** Exposes the service internally via ClusterIP.
+- **HPA:** Configured for CPU-based auto-scaling.
+- **RBAC:** Restricts service account permissions to only what is needed.
+- **CI/CD:** GitHub Actions automate build, test, security scan, Docker image push, and Kubernetes deployment.
 
-docker push ashwanth01/history-service:latest
+---
 
+## How It Works (Public Explanation)
 
+This microservice acts as a simple, auditable log for any application that needs to track what queries were made and what outputs were returned. It exposes a REST API for saving and retrieving these records. The service is designed for cloud-native environments, with all necessary Kubernetes manifests and CI/CD automation included. It is suitable for use as a backend component in larger systems, or as a standalone service for audit and history tracking.
 
-docker build -t ashwanth01/ashapp-backend:latest .
+---
 
-docker run -d --name ashapp-backend \
-  -p 5000:5000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v $(which docker):/usr/bin/docker \
-  -v $(which kubectl):/usr/bin/kubectl \
-  -v $HOME/.kube:/home/appuser/.kube \
-  -e KUBECONFIG=/home/appuser/.kube/config \
-  --user root \
-  ashwanth01/ashapp-backend:latest
+## Extending & Integrating
 
+- **Integrate** with any frontend or backend via HTTP REST.
+- **Deploy** in any Kubernetes cluster.
+- **Customize** for other databases or additional endpoints as needed.
 
+---
 
+## Diagram Rendering
 
+You can render the above diagrams using tools like [PlantUML](https://plantuml.com/) or [Mermaid](https://mermaid-js.github.io/).
 
+---
 
-docker buildx build --platform linux/amd64 -t ashwanth01/history-service:latest .
+For more details, see the Kubernetes manifests in `backend/k8s/` and the Java source in `backend/history-services/src/main/java/com/example/historyservice/`.
 
-
-
-
-
+---
 
 
