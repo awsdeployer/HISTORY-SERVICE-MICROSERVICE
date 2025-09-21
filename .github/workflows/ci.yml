@@ -23,9 +23,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        
+      - name: Install test dependencies
+        run: pip install -r test-requirements.txt
 
       - name: Linting (Flake8)
-        run: pip install flake8 && flake8 backend/history-services || true
+        run: flake8 backend/history-services || true
         continue-on-error: true
 
       - name: SAST (CodeQL Analysis)
@@ -33,11 +36,11 @@ jobs:
         continue-on-error: true
 
       - name: SCA (Safety)
-        run: pip install safety && safety check -r backend/history-services/requirements.txt || true
+        run: safety check -r backend/history-services/requirements.txt || true
         continue-on-error: true
 
       - name: Unit Tests (pytest)
-        run: pip install pytest && pytest backend/history-services/tests || true
+        run: pytest backend/history-services/tests || true
         continue-on-error: true
 
       - name: DAST (OWASP ZAP Baseline Scan)
