@@ -1,5 +1,6 @@
-# -------- Stage 1: Build --------
 ARG MAVEN_VERSION=3.9.6-eclipse-temurin-17
+ARG JDK_VERSION=17-jdk-jammy
+# -------- Stage 1: Build --------
 FROM maven:${MAVEN_VERSION} AS builder
 WORKDIR /app
 # Copy pom.xml and download dependencies
@@ -10,7 +11,6 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # -------- Stage 2: Runtime --------
-ARG JDK_VERSION=17-jdk-jammy
 FROM eclipse-temurin:${JDK_VERSION}
 WORKDIR /app
 # Copy only the built JAR from the builder stage
