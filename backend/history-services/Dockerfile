@@ -1,5 +1,5 @@
 ARG MAVEN_VERSION=3.9.6-eclipse-temurin-17
-ARG JDK_VERSION=17-jdk-jammy
+ARG JDK_VERSION=17-jre-jammy
 # -------- Stage 1: Build --------
 FROM maven:${MAVEN_VERSION} AS builder
 WORKDIR /app
