@@ -1,5 +1,6 @@
 # -------- Stage 1: Build --------
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+ARG MAVEN_VERSION=3.9.6-eclipse-temurin-17
+FROM maven:${MAVEN_VERSION} AS builder
 WORKDIR /app
 # Copy pom.xml and download dependencies
 COPY pom.xml .
@@ -9,7 +10,8 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # -------- Stage 2: Runtime --------
-FROM eclipse-temurin:17-jdk-jammy
+ARG JDK_VERSION=17-jdk-jammy
+FROM eclipse-temurin:${JDK_VERSION}
 WORKDIR /app
 # Copy only the built JAR from the builder stage
 COPY --from=builder /app/target/history-service-1.0.0.jar app.jar
