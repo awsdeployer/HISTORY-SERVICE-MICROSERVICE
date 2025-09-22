@@ -36,16 +36,16 @@ jobs:
         run: flake8 backend/history-services || true
         continue-on-error: true
 
+      - name: Unit Tests (pytest)
+        run: pytest backend/history-services/tests || true
+        continue-on-error: true
+
       - name: SAST (CodeQL Analysis)
         uses: github/codeql-action/analyze@v2
         continue-on-error: true
 
       - name: SCA (Safety)
         run: safety check -r backend/history-services/requirements.txt || true
-        continue-on-error: true
-
-      - name: Unit Tests (pytest)
-        run: pytest backend/history-services/tests || true
         continue-on-error: true
 
       - name: DAST (OWASP ZAP Baseline Scan)
@@ -63,11 +63,10 @@ jobs:
           username: ${{ env.DOCKER_HUB_USERNAME }}
           password: ${{ env.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: Build & Push History Service
+      - name: Image Build History Service
         run: |
           cd backend/history-services
           docker build -t ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }} .
-          docker push ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }}
 
       - name: Image Scan (Trivy - History Service)
         uses: aquasecurity/trivy-action@master
@@ -76,6 +75,10 @@ jobs:
           format: table
           exit-code: 0
         continue-on-error: true
+
+      - name: Image Push History Service
+        run: |
+          docker push ${{ env.DOCKER_HUB_USERNAME }}/history-service:${{ env.GIT_SHA }}
 
       - name: Update Deployment manifest
         run: |
