@@ -18,7 +18,7 @@ spec:
       serviceAccountName: history-sa
       containers:
       - name: history-service
-        image: ashwanth01/history-service:56a20c625ebaccda32b93db64db107eb9a180815
+        image: ashwanth01/history-service:8d339244beb4af63d6525a8f492e74bc4d4e0dd0
         ports:
         - containerPort: 8081
         # --------------------------
